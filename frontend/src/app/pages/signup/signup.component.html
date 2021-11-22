@@ -1,0 +1,98 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 d-flex flex-column justify-content-center">
+      <div class="row">
+        <div class="col-lg-6 col-md-8 mx-auto">
+          <div class="card rounded shadow shadow-sm">
+            <div class="card-header">
+              <h3 class="mb-0">Registracija</h3>
+            </div>
+            <div class="card-body">
+              <div class="input-group mt-2">
+                <input
+                  type="email"
+                  class="form-control"
+                  placeholder="Email"
+                  #userEmail
+                  required
+                  (keyup)="FieldsModified()"
+                />
+              </div>
+
+              <div class="input-group mt-2">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Korisničko ime"
+                  #userDisplayName
+                  required
+                  (keyup)="FieldsModified()"
+                />
+              </div>
+
+              <div class="input-group mt-2">
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Lozinka"
+                  #userPwd
+                  required
+                  (keyup)="FieldsModified()"
+                />
+              </div>
+
+              <div *ngIf="SigningUpFailed">
+                <p class="text-danger text-center">
+                  Registriranje nije uspjelo. Pokušajte ponovo.
+                </p>
+              </div>
+
+              <div class="mt-2">
+                <div class="input-group d-flex">
+                  <input
+                    type="button"
+                    style="margin:auto"
+                    type="button"
+                    class="btn btn-primary flex-fill"
+                    value="Registrirajte se"
+                    (click)="
+                      SignUp(
+                        userEmail.value,
+                        userPwd.value,
+                        userDisplayName.value
+                      )
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <span>
+            Već imate račun?
+            <a
+              (click)="router.navigate(['sign-in'])"
+              role="button"
+              href="javascript:void(null);"
+              >Prijavite se</a
+            >
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #signingUp>
+  <div class="text-center">
+    <div
+      class="spinner-border"
+      style="width: 3rem; height: 3rem;"
+      role="status"
+    >
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>
+      Registriranje...
+    </p>
+  </div>
+</ng-template>

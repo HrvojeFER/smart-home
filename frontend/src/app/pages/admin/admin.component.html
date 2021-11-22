@@ -1,0 +1,139 @@
+<div class="container-fluid">
+  <h3>Korisnici koji čekaju odobrenje:</h3>
+  <div *ngIf="!Approving; else approving">
+    <div *ngIf="!Unblocking; else unblocking">
+      <div *ngIf="PendingAsync | async as pending; else noPending">
+        <div *ngIf="pending.length > 0; else noPending">
+          <div class="list-group mt-2 bg-light" *ngFor="let user of pending">
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <p class="mt-2">
+                    {{ user.displayName }}
+                  </p>
+                </div>
+                <div class="col">
+                  <button
+                    class="btn btn-primary"
+                    (click)="ApproveUser(user.uid)"
+                  >
+                    Odobri
+                  </button>
+                </div>
+                <div class="col">
+                  <button
+                    class="btn btn-danger"
+                    (click)="admin.BlockUser(user.uid)"
+                  >
+                    Blokiraj
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noPending>
+    <p>
+      Nema korisnika na čekanju.
+    </p>
+  </ng-template>
+  <hr />
+  <h3>Blokirani korisnici:</h3>
+  <div *ngIf="!Blocking; else blocking">
+    <div *ngIf="!Unblocking; else unblocking">
+      <div *ngIf="BlockedAsync | async as blocked; else noBlocked">
+        <div *ngIf="blocked.length > 0; else noBlocked">
+          <div class="list-group mt-2 bg-light" *ngFor="let user of blocked">
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <p class="mt-2">
+                    {{ user.displayName }}
+                  </p>
+                </div>
+                <div class="col">
+                  <button
+                    class="btn btn-primary"
+                    (click)="UnblockUser(user.uid)"
+                  >
+                    Odblokiraj
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noBlocked>
+    <p>
+      Nema blokiranih korisnika.
+    </p>
+  </ng-template>
+  <hr />
+  <h3>Odobreni korisnici:</h3>
+  <div *ngIf="!Blocking; else blocking">
+    <div *ngIf="!Approving; else approving">
+      <div *ngIf="ApprovedAsync | async as approved; else noApproved">
+        <div *ngIf="approved.length > 0; else noApproved">
+          <div class="mt-2 bg-light container" *ngFor="let user of approved">
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <p class="mt-2">
+                    {{ user.displayName }}
+                  </p>
+                </div>
+                <div class="col">
+                  <button class="btn btn-danger" (click)="BlockUser(user.uid)">
+                    Blokiraj
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #noApproved>
+    <p>
+      Nema odobrenih korisnika.
+    </p>
+  </ng-template>
+</div>
+
+<ng-template #approving>
+  <div class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>
+      Odobravanje u tijeku...
+    </p>
+  </div>
+</ng-template>
+<ng-template #unblocking>
+  <div class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>
+      Odblokiranje u tijeku...
+    </p>
+  </div>
+</ng-template>
+<ng-template #blocking>
+  <div class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>
+      Blokiranje u tijeku...
+    </p>
+  </div>
+</ng-template>

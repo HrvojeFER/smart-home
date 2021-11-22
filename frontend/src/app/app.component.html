@@ -1,0 +1,14 @@
+<div *ngIf="Initialized; else notInitialized">
+  <app-navbar></app-navbar>
+</div>
+
+<ng-template #notInitialized>
+  <div class="text-center">
+    <div class="spinner-grow app-loading-spinner" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p class="app-loading-spinner-text">
+      Učitavanje
+    </p>
+  </div>
+</ng-template>

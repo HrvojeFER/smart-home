@@ -1,0 +1,67 @@
+<div class="jumbotron" *ngIf="!ResettingArduino; else resetingArduino">
+  <div class="display-2">Pozdrav, {{ DisplayName }}!</div>
+  <div class="lead mt-4">
+    Ovo je vaša korisnička stranica.
+  </div>
+  <hr class="my-4" />
+
+  <p class="lead mb-2">Osnovni podaci:</p>
+  <p class="d-inline">{{ 'Email: ' }}</p>
+  <a [attr.href]="'mailto:' + Email" class="d-inline">{{ Email }}</a>
+  <p>Lozinka: *************</p>
+  <div *ngIf="!SendingEmail; else sendingEmail">
+    <button class="btn btn-primary" (click)="SendPasswordResetEmail()">
+      Pošalji zahtjev za promjenu lozinke
+    </button>
+    <div *ngIf="EmailSent">
+      <p class="text-success">
+        Zahtjev za promjenu lozinke je poslan. Pogledajte Vaš inbox.
+      </p>
+    </div>
+    <div *ngIf="SendingEmailFailed">
+      <p class="text-danger">
+        Došlo je do greške. Zahtjev za promjenu nije poslan. Pokušajte ponovno.
+      </p>
+    </div>
+  </div>
+  <ng-template #sendingEmail>
+    <div class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+      <p>
+        Slanje zahtjeva...
+      </p>
+    </div>
+  </ng-template>
+  <hr class="my-4" />
+
+  <div *ngIf="HasArduino">
+    <p class="lead mb-2">Podaci o Vašem Arduinu:</p>
+    <p>Ime: {{ ArduinoName }}</p>
+    <div *ngIf="!IsAdmin">
+      <button class="btn btn-danger" (click)="ResetArduino()">
+        Ponovno postavite Arduino...
+      </button>
+      <p class="text-danger">
+        Ovo će obrisati sve Vaše presetove i biti ćete preusmjereni na stranicu
+        za odabir Arduina.
+      </p>
+    </div>
+  </div>
+</div>
+
+<ng-template #resetingArduino>
+  <div class="text-center">
+    <div
+      class="spinner-border"
+      style="width: 3rem; height: 3rem;"
+      role="status"
+    >
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>
+      Resetiranje Arduina...
+    </p>
+  </div>
+</ng-template>

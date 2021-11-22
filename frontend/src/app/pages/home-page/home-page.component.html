@@ -1,0 +1,250 @@
+<div class="container-fluid">
+  <div class="card-deck" *ngIf="provider.getSensors() as sensors">
+    <div class="card" *ngFor="let location of provider.getLocations(sensors)">
+      <div class="card-header">
+        <div
+          class="row justify-content-end ml-1 font-weight-bold"
+          style="margin-bottom: 5px;"
+        >
+          {{ location + ':' }}
+          <span
+            class="ml-auto mr-3"
+            (click)="currentLocation = location"
+            onclick="$('#controllerModal').modal('show'); event.stopPropagation();"
+            ><i class="fa fa-edit"></i
+          ></span>
+        </div>
+        <div *ngFor="let sensor of provider.getSensors({ location: location })">
+          <div class="row justify-content-start">
+            <p class="col-7 offset-1 offset-md-0 col-md-8 col-lg-7 offset-lg-1">
+              {{ Capitalize(sensor.type.name) + ': ' }}
+            </p>
+            <p
+              *ngIf="
+                provider.getSensorStatus(sensor) | async as status;
+                else loading
+              "
+              class="col-4 col-md-4 col-lg-4"
+            >
+              {{ ' ' + status + sensor.unit.short }}
+            </p>
+            <ng-template #loading>
+              <div><i class="fa fa-spinner fa-spin fa-lg"></i></div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-1 mt-2">
+    <p>
+      {{
+        preset.ActivePreset
+          ? 'Trenutni preset: ' + preset.ActivePreset.name
+          : 'Nema aktivnog preseta.'
+      }}
+    </p>
+  </div>
+  <main class="grid-item main">
+    <div class="accordion" id="controllerAccordion">
+      <div class="items">
+        <div
+          class="item"
+          *ngFor="let dobiveniPreset of preset.UserPresets; let i = index"
+        >
+          <div class="card">
+            <div
+              class="card-header"
+              [attr.aria-controls]="trim(dobiveniPreset.name) + i"
+            >
+              <div class="row ml-1">
+                <div class="font-weight-bold" style="line-height: 33px;">
+                  {{ dobiveniPreset.name }}
+                </div>
+                <button
+                  [hidden]="usporedi(dobiveniPreset, preset.ActivePreset)"
+                  type="button"
+                  class="btn ml-auto"
+                  (click)="presetZaPrikazati = dobiveniPreset"
+                  onclick="$('#deletePresetModal').modal('show'); event.stopPropagation();"
+                >
+                  <i class="fa fa-sm fa-power-off"></i>
+                </button>
+                <button
+                  [hidden]="!usporedi(dobiveniPreset, preset.ActivePreset)"
+                  type="button"
+                  onclick="event.stopPropagation();"
+                  class="btn ml-auto"
+                >
+                  <i class="fa fa-xs fa-check"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div
+    class="modal fade"
+    id="deletePresetModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="deletePresetModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-400" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="addPresetModalLabel">
+            {{ presetZaPrikazati.name }}
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+            (click)="print()"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div
+            *ngFor="
+              let location of lokacijePreseta(presetZaPrikazati);
+              let j = index
+            "
+          >
+            <div class="font-weight-bold ml-3">
+              {{ location + ':' }}
+            </div>
+            <div
+              class="row justify-content-end"
+              *ngFor="
+                let state of GetControllerStatesForLocation(
+                  presetZaPrikazati,
+                  location
+                )
+              "
+            >
+              <p class="offset-2 col-5">
+                {{ state.controller.type.name }}
+              </p>
+              <span *ngIf="state.turnedOn" class="offset-1 col-4"
+                ><i class="fa fa-plus"></i
+              ></span>
+              <span *ngIf="!state.turnedOn" class="col-4"
+                ><i class="fa fa-minus"></i
+              ></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input
+            type="button"
+            [disabled]="usporedi(presetZaPrikazati, preset.ActivePreset)"
+            class="btn btn-primary"
+            value="Aktiviraj"
+            data-dismiss="modal"
+            onclick="$('#deletePresetModal').modal('hide')"
+            (click)="this.preset.ActivatePreset(presetZaPrikazati)"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="controllerModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="controllerModal"
+    aria-hidden="true"
+  >
+    <div
+      class="modal-dialog modal-dialog-centered modal-dialog-75 modal-400"
+      role="document"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title font-weight-bold" id="controllerModalLabel">
+            {{ currentLocation }}
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div
+          class="modal-body"
+          *ngIf="
+            provider.getControllers({
+              location: currentLocation
+            }) as controllers
+          "
+        >
+          <div *ngFor="let controller of controllers; let i = index">
+            <div
+              *ngIf="{
+                turnedOn: provider.getControllerStatus(controller) | async
+              } as status"
+            >
+              <div *ngIf="status.turnedOn !== null; else loading">
+                <div
+                  class="row "
+                  *ngIf="
+                    preset.ActivePreset &&
+                    ControllerChangeDeactivatesPreset(
+                      controller,
+                      preset.ActivePreset,
+                      status.turnedOn
+                    ) as deactivatesPreset
+                  "
+                  style="padding-bottom: 5px;"
+                >
+                  <div class="col-6 offset-1 offset-md-2 col-md-5 text-danger">
+                    {{ 'Deaktivira: ' + preset.ActivePreset.name }}
+                  </div>
+                </div>
+                <div class="row" style="padding-bottom: 10px;">
+                  <p class="col-6 offset-1 offset-md-2 col-md-5">
+                    {{ controller.type.name }}
+                  </p>
+                  <div
+                    *ngIf="!getStatusChanging(controller); else statusChanging"
+                  >
+                    <ui-switch
+                      class="col-5 col-md-5"
+                      (click)="changeStatus(controller)"
+                      [checked]="status.turnedOn"
+                      attr.id="switch+{{ controller.location + i }}"
+                      checkedLabel="on"
+                      uncheckedLabel="off"
+                      color="#007bff"
+                      checkedTextColor="#fff"
+                    ></ui-switch>
+                  </div>
+                  <ng-template #statusChanging
+                    ><div class=" col-5 col-md-5">
+                      <i class="fa fa-spinner fa-spin fa-lg"></i></div
+                  ></ng-template>
+                </div>
+                <hr *ngIf="i !== controllers.length - 1" />
+              </div>
+            </div>
+          </div>
+          <ng-template #loading>
+            <div><i class="fa fa-spinner fa-spin fa-lg"></i></div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

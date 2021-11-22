@@ -1,0 +1,145 @@
+<div *ngIf="provider.getControllers() as controllers">
+  <div class="container-fluid overflow-auto">
+    <div class="accordion" id="controllerAccordion">
+      <div
+        class="card"
+        *ngFor="let location of provider.getLocations(controllers)"
+      >
+        <div
+          class="card-header"
+          [attr.id]="'h' + trim(location)"
+          [attr.data-target]="'#' + trim(location)"
+          data-toggle="collapse"
+          aria-expanded="true"
+          [attr.aria-controls]="trim(location)"
+        >
+          {{ location }}
+        </div>
+        <div
+          [attr.id]="trim(location)"
+          class="collapse"
+          [attr.aria-labelledby]="'h' + trim(location)"
+          data-parent="#controllerAccordion"
+        >
+          <div class="card-body container">
+            <div
+              class="row"
+              *ngFor="
+                let property of provider.getProperties(controllers, location)
+              "
+            >
+              <div
+                class="col"
+                *ngIf="
+                  provider.getControllers({
+                    location: location,
+                    property: property
+                  }) as controllers
+                "
+              >
+                <div *ngFor="let controller of controllers">
+                  <div
+                    *ngIf="
+                      (provider.getControllerStatus(controller) | async) !==
+                        null;
+                      else loading
+                    "
+                  >
+                    <button
+                      class="btn"
+                      (click)="changeStatus(controller)"
+                      [ngClass]="
+                        (provider.getControllerStatus(controller) | async)
+                          ? 'btn-warning'
+                          : 'btn-dark'
+                      "
+                      *ngIf="!getStatusChanging(controller)"
+                    >
+                      {{
+                        ((provider.getControllerStatus(controller) | async)
+                          ? 'Ugasi '
+                          : 'Upali ') +
+                          controller.type.akuzativ +
+                          '.'
+                      }}
+                    </button>
+                    <div style="padding-top: 10px;">
+                      <p *ngIf="!getStatusChanging(controller)">
+                        {{
+                          controller.type.name
+                            .charAt(0)
+                            .toString()
+                            .toUpperCase() +
+                            controller.type.name.slice(
+                              1,
+                              controller.type.name.length
+                            ) +
+                            ' je ' +
+                            ((provider.getControllerStatus(controller) | async)
+                              ? provider.getStatus(controller.type.gender, true)
+                              : provider.getStatus(
+                                  controller.type.gender,
+                                  false
+                                )) +
+                            '.'
+                        }}
+                      </p>
+                      <div *ngIf="getStatusChanging(controller)">
+                        <div class="spinner-border" role="status">
+                          <span class="sr-only">
+                            Change spinner
+                          </span>
+                        </div>
+                        <p>
+                          {{
+                            ((provider.getControllerStatus(controller) | async)
+                              ? 'Gašenje '
+                              : 'Paljenje ') + controller.type.genitiv
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="col"
+                  *ngIf="
+                    provider.getSensors({
+                      location: location,
+                      property: property
+                    }) as sensors
+                  "
+                >
+                  <div *ngFor="let sensor of sensors">
+                    <div style="padding-top: 10px;">
+                      <div
+                        *ngIf="
+                          provider.getSensorStatus(sensor)
+                            | async as sensorStatus;
+                          else loading
+                        "
+                      >
+                        <p>
+                          {{
+                            'Status ' +
+                              sensor.type.genitiv +
+                              ': ' +
+                              sensorStatus.toString() +
+                              sensor.unit.short
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #loading>
+      <p>Učitavanje...</p>
+    </ng-template>
+  </div>
+</div>

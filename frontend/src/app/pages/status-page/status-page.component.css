@@ -1,0 +1,8 @@
+.container-fluid { 
+    padding-bottom: 1%;
+}
+
+.spinner-border{
+    display: flex;
+    justify-content: center;
+  }

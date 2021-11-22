@@ -1,0 +1,42 @@
+<div class="container-fluid">
+  <div class="text-center">
+    <h3>Hvala na registraciji</h3>
+
+    <div class="formGroup">
+      <p class="text-center">
+        Poslali smo email na: <strong>{{ Email }}</strong
+        >.
+      </p>
+      <p class="text-center">
+        Molimo vas pogledajte svoj inbox i kliknite na link za verifikaciju
+        email-a.
+      </p>
+    </div>
+
+    <div class="formGroup text-center">
+      <button type="button" class="btn btn-primary" (click)="sendEmailAgain()">
+        <i class="fas fa-redo-alt"></i>
+        Ponovno pošalji email za verifikaciju
+      </button>
+    </div>
+
+    <div *ngIf="SendingEmail" class="text-center mt-2">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">
+          Sending spinner
+        </span>
+      </div>
+      Šaljem email...
+    </div>
+    <div *ngIf="EmailSentAgain" class="text-center mt-2">
+      Email je ponovno poslan.
+    </div>
+  </div>
+
+  <div class="text-center mt-3">
+    <span
+      >Vrati se?
+      <span class="redirect" routerLink="/sign-in">Prijava</span></span
+    >
+  </div>
+</div>

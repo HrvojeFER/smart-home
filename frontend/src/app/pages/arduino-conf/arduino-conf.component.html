@@ -1,0 +1,35 @@
+<div class="container-fluid" *ngIf="!Selecting; else selecting">
+  <h3>Pretražite svoj Arduino:</h3>
+  <input
+    class="form-control"
+    id="myInput"
+    type="text"
+    placeholder="Search.."
+    (keyup)="filterArduinos($event.target.value)"
+  />
+  <br />
+  <ul class="list-group">
+    <li
+      *ngFor="let name of FilterList | async"
+      class="list-group-item"
+      (click)="selectArduino(name)"
+    >
+      {{ name }}
+    </li>
+  </ul>
+</div>
+
+<ng-template #selecting>
+  <div class="text-center">
+    <div
+      class="spinner-border"
+      style="width: 3rem; height: 3rem;"
+      role="status"
+    >
+      <span class="sr-only">Loading...</span>
+    </div>
+    <p>
+      Postavljanje Arduina...
+    </p>
+  </div>
+</ng-template>
